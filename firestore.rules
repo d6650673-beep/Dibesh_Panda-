@@ -136,12 +136,12 @@ service cloud.firestore {
 
     /**
      * @description Defines rules for social media links. Publicly readable, admin-only writes.
-     * @path /socialMediaLinks/{socialMediaLinkId}
+     * @path /socialLinks/{socialLinkId}
      * @allow Any user can read the list of social media links to display in the footer. (get, list)
      * @deny A non-admin user tries to change a social media URL. (update)
      * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
-    match /socialMediaLinks/{socialMediaLinkId} {
+    match /socialLinks/{socialLinkId} {
       allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
