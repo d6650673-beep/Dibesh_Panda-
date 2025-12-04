@@ -1,0 +1,191 @@
+/**
+ * This ruleset enforces a strict role-based security model for a portfolio or CMS application.
+ *
+ * Core Philosophy:
+ * The security model is centered around a global 'admin' role. Users with this role have full
+ * control over all content collections. Most content is publicly readable by any user, signed-in
+ * or not. This is ideal for a public-facing website where content is managed through a secure
+ * admin panel.
+ *
+ * Data Structure:
+ * The data is organized into top-level collections representing different sections of the website
+ * (e.g., /heroSections, /projects, /services). A special collection, /roles_admin, is used to
+ * explicitly grant administrative privileges to specific user UIDs.
+ *
+ * Key Security Decisions:
+ * - Admin Role Management: A user is considered an admin if a document with their UID exists in the
+ *   /roles_admin collection. Only existing admins can add or remove other admins.
+ * - Public Content: All collections representing website content are publicly readable (`get`, `list`)
+ *   to ensure the website can be viewed by anyone.
+ * - Admin-Only Writes: All write operations (`create`, `update`, `delete`) on content collections are
+ *   strictly limited to users with the admin role.
+ * - Contact Form: The `/contactFormSubmissions` collection has unique rules. It is publicly writable
+ *   (`create`) so anyone can submit the form, but it is readable and deletable only by admins.
+ *   Submissions are immutable (updates are forbidden).
+ *
+ * Denormalization for Authorization:
+ * The `/roles_admin/{userId}` collection is a key denormalization strategy. Instead of checking roles
+ * on a user document, we perform a direct and efficient `exists()` check against this collection. This
+ * provides a single source of truth for administrative privileges across the entire database.
+ *
+ * Structural Segregation:
+ * The data model effectively uses structural segregation. Publicly viewable content like `/projects`
+ * is kept separate from private, admin-only data like `/contactFormSubmissions`, simplifying the
+ * rules required for each path.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --------------------------------------------------------------------------------
+    // Helper Functions
+    // --------------------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the user has an admin role by verifying the existence of a
+     * document in the /roles_admin collection matching their UID.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    // --------------------------------------------------------------------------------
+    // Admin Role Management
+    // --------------------------------------------------------------------------------
+
+    /**
+     * @description Manages admin user roles. Only existing admins can read or modify this collection.
+     * @path /roles_admin/{userId}
+     * @allow An existing admin (auth.uid='admin_abc') reads the list of other admins. (get, list)
+     * @deny A non-admin user (auth.uid='user_123') tries to add themselves as an admin. (create)
+     * @principle Enforces role-based access control for managing administrative privileges.
+     */
+    match /roles_admin/{userId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    // --------------------------------------------------------------------------------
+    // Public Content Sections (Admin-Managed)
+    // --------------------------------------------------------------------------------
+
+    /**
+     * @description Defines rules for the hero section content. Publicly readable, admin-only writes.
+     * @path /heroSections/{heroSectionId}
+     * @allow Any user, including unauthenticated ones, reads the hero section content. (get, list)
+     * @deny A signed-in, non-admin user tries to update the hero section text. (update)
+     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
+     */
+    match /heroSections/{heroSectionId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Defines rules for the about section content. Publicly readable, admin-only writes.
+     * @path /aboutSections/{aboutSectionId}
+     * @allow Any user reads the "about me" bio. (get, list)
+     * @deny A non-admin user tries to create a new about section. (create)
+     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
+     */
+    match /aboutSections/{aboutSectionId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+
+      /**
+       * @description Rules for skills, nested under an about section. Publicly readable, admin-only writes.
+       * @path /aboutSections/{aboutSectionId}/skills/{skillId}
+       * @allow An admin user adds a new skill with the correct `aboutSectionId`. (create)
+       * @deny An admin user tries to create a skill where the document's `aboutSectionId` does not match the path. (create)
+       * @principle Secures subcollection data and ensures relational integrity with the parent document.
+       */
+      match /skills/{skillId} {
+        allow get: if true;
+        allow list: if true;
+        allow create: if isAdmin() && request.resource.data.aboutSectionId == aboutSectionId;
+        allow update: if isAdmin() && resource != null && request.resource.data.aboutSectionId == resource.data.aboutSectionId;
+        allow delete: if isAdmin() && resource != null;
+      }
+    }
+
+    /**
+     * @description Defines rules for the projects collection. Publicly readable, admin-only writes.
+     * @path /projects/{projectId}
+     * @allow Any user views the list of projects. (list)
+     * @deny A non-admin user tries to delete a project. (delete)
+     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
+     */
+    match /projects/{projectId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Defines rules for the services collection. Publicly readable, admin-only writes.
+     * @path /services/{serviceId}
+     * @allow Any user reads the details of a service. (get)
+     * @deny A non-admin user attempts to create a new service offering. (create)
+     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
+     */
+    match /services/{serviceId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Defines rules for social media links. Publicly readable, admin-only writes.
+     * @path /socialMediaLinks/{socialMediaLinkId}
+     * @allow Any user can read the list of social media links to display in the footer. (get, list)
+     * @deny A non-admin user tries to change a social media URL. (update)
+     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
+     */
+    match /socialMediaLinks/{socialMediaLinkId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    // --------------------------------------------------------------------------------
+    // Special Collections
+    // --------------------------------------------------------------------------------
+
+    /**
+     * @description Contact form submissions can be created by anyone, but only read and deleted by admins. Updates are disallowed.
+     * @path /contactFormSubmissions/{contactFormSubmissionId}
+     * @allow An anonymous visitor submits the contact form. (create)
+     * @deny A regular signed-in user tries to read a submission. (get, list)
+     * @principle Allows public write access for data submission while protecting submitted data as private to admins.
+     */
+    match /contactFormSubmissions/{contactFormSubmissionId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if true;
+      allow update: if false;
+      allow delete: if isAdmin() && resource != null;
+    }
+  }
+}

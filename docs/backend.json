@@ -1,0 +1,388 @@
+{
+  "entities": {
+    "HeroSection": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "HeroSection",
+      "type": "object",
+      "description": "Represents the hero section content on the home page.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Hero Section entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name displayed in the hero section."
+        },
+        "title": {
+          "type": "string",
+          "description": "The job title or role displayed in the hero section."
+        },
+        "introduction": {
+          "type": "string",
+          "description": "A short introduction or bio displayed in the hero section."
+        },
+        "backgroundVisual": {
+          "type": "string",
+          "description": "URL or reference to the background visual (image or animation)."
+        },
+        "hireMeButtonText": {
+          "type": "string",
+          "description": "Text for the 'Hire Me' button."
+        },
+        "contactButtonText": {
+          "type": "string",
+          "description": "Text for the 'Contact' button."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "title",
+        "introduction"
+      ]
+    },
+    "AboutSection": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AboutSection",
+      "type": "object",
+      "description": "Represents the about section content.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the About Section entity."
+        },
+        "bio": {
+          "type": "string",
+          "description": "The biography text."
+        },
+        "profilePhoto": {
+          "type": "string",
+          "description": "URL or reference to the profile photo stored in Firebase Storage."
+        }
+      },
+      "required": [
+        "id",
+        "bio",
+        "profilePhoto"
+      ]
+    },
+    "Skill": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Skill",
+      "type": "object",
+      "description": "Represents a skill listed in the about section.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Skill entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the skill (e.g., 'JavaScript', 'React')."
+        },
+        "level": {
+          "type": "number",
+          "description": "Skill level as a percentage (0-100)."
+        },
+        "aboutSectionId": {
+          "type": "string",
+          "description": "Reference to AboutSection. (Relationship: AboutSection 1:N Skill)"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "level",
+        "aboutSectionId"
+      ]
+    },
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
+      "type": "object",
+      "description": "Represents a project in the projects section.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Project entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the project."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the project."
+        },
+        "techUsed": {
+          "type": "array",
+          "description": "List of technologies used in the project.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "projectImages": {
+          "type": "array",
+          "description": "List of URLs or references to project images stored in Firebase Storage.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "liveLink": {
+          "type": "string",
+          "description": "URL to the live project."
+        },
+        "githubLink": {
+          "type": "string",
+          "description": "URL to the project's GitHub repository."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "techUsed",
+        "projectImages",
+        "liveLink",
+        "githubLink"
+      ]
+    },
+    "Service": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Service",
+      "type": "object",
+      "description": "Represents a service offered.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Service entity."
+        },
+        "icon": {
+          "type": "string",
+          "description": "Icon representing the service (e.g., FontAwesome class name)."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the service."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the service."
+        }
+      },
+      "required": [
+        "id",
+        "icon",
+        "title",
+        "description"
+      ]
+    },
+    "ContactFormSubmission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ContactFormSubmission",
+      "type": "object",
+      "description": "Represents a submission from the contact form.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Contact Form Submission entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the person submitting the form."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the person submitting the form.",
+          "format": "email"
+        },
+        "message": {
+          "type": "string",
+          "description": "The message submitted through the form."
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time the form was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "submissionDate"
+      ]
+    },
+    "SocialMediaLink": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SocialMediaLink",
+      "type": "object",
+      "description": "Represents a social media link.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Social Media Link entity."
+        },
+        "platform": {
+          "type": "string",
+          "description": "The name of the social media platform (e.g., 'LinkedIn', 'Twitter')."
+        },
+        "url": {
+          "type": "string",
+          "description": "The URL to the social media profile.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "platform",
+        "url"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "adminRole",
+          "schema": {
+            "$ref": "#/backend/entities/adminRole"
+          },
+          "description": "Collection to store admin user IDs. Existence in this collection grants admin privileges.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the admin user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/heroSections/{heroSectionId}",
+        "definition": {
+          "entityName": "HeroSection",
+          "schema": {
+            "$ref": "#/backend/entities/HeroSection"
+          },
+          "description": "Collection to store hero section content.",
+          "params": [
+            {
+              "name": "heroSectionId",
+              "description": "The unique identifier for the HeroSection document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/aboutSections/{aboutSectionId}",
+        "definition": {
+          "entityName": "AboutSection",
+          "schema": {
+            "$ref": "#/backend/entities/AboutSection"
+          },
+          "description": "Collection to store about section content.",
+          "params": [
+            {
+              "name": "aboutSectionId",
+              "description": "The unique identifier for the AboutSection document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/aboutSections/{aboutSectionId}/skills/{skillId}",
+        "definition": {
+          "entityName": "Skill",
+          "schema": {
+            "$ref": "#/backend/entities/Skill"
+          },
+          "description": "Subcollection to store skills associated with a particular about section.",
+          "params": [
+            {
+              "name": "aboutSectionId",
+              "description": "The unique identifier for the AboutSection document."
+            },
+            {
+              "name": "skillId",
+              "description": "The unique identifier for the Skill document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Collection to store project information.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "The unique identifier for the Project document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/services/{serviceId}",
+        "definition": {
+          "entityName": "Service",
+          "schema": {
+            "$ref": "#/backend/entities/Service"
+          },
+          "description": "Collection to store service information.",
+          "params": [
+            {
+              "name": "serviceId",
+              "description": "The unique identifier for the Service document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/contactFormSubmissions/{contactFormSubmissionId}",
+        "definition": {
+          "entityName": "ContactFormSubmission",
+          "schema": {
+            "$ref": "#/backend/entities/ContactFormSubmission"
+          },
+          "description": "Collection to store contact form submissions.",
+          "params": [
+            {
+              "name": "contactFormSubmissionId",
+              "description": "The unique identifier for the ContactFormSubmission document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/socialMediaLinks/{socialMediaLinkId}",
+        "definition": {
+          "entityName": "SocialMediaLink",
+          "schema": {
+            "$ref": "#/backend/entities/SocialMediaLink"
+          },
+          "description": "Collection to store social media links.",
+          "params": [
+            {
+              "name": "socialMediaLinkId",
+              "description": "The unique identifier for the SocialMediaLink document."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure is designed for the Firebase Folio application, emphasizing security, scalability, and ease of maintenance. It leverages structural segregation and denormalization to achieve authorization independence and simplify security rules. All content is managed via an admin panel. All collections are role-based (Admin only).\n\n*   **Authorization Independence:** The structure is designed to avoid hierarchical authorization dependencies, eliminating the need for `get()` calls in security rules.  Since all collections are only editable by the admin role, there's no user-level data access that needs to be managed on a document level.\n*   **Structural Segregation:** Data with different access requirements is stored in separate collections.  This simplifies security rules.\n*   **Access Modeling:**  The admin role is managed through the `/roles_admin/{uid}` collection. Only users with a document in this collection can modify the site's content.\n*   **QAPs Support:** The use of structural segregation, specifically dedicated collections for each entity type, directly supports Queryability and Predictability (QAPs). Each collection can be secured with rules specific to the admin role, ensuring that only authorized admin users can `list`, `get`, `create`, `update`, and `delete` data."
+  }
+}
