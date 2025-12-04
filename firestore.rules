@@ -89,8 +89,7 @@ service cloud.firestore {
      * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
     match /heroSections/{heroSectionId} {
-      allow get: if true;
-      allow list: if true;
+      allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
@@ -102,14 +101,12 @@ service cloud.firestore {
      * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
     match /aboutSections/{aboutSectionId} {
-      allow get: if true;
-      allow list: if true;
+      allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
     
     match /skills/{skillId} {
-        allow get: if true;
-        allow list: if true;
+        allow get, list: if true;
         allow create, update, delete: if isAdmin();
     }
 
@@ -121,8 +118,7 @@ service cloud.firestore {
      * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
     match /projects/{projectId} {
-      allow get: if true;
-      allow list: if true;
+      allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
@@ -134,8 +130,7 @@ service cloud.firestore {
      * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
     match /services/{serviceId} {
-      allow get: if true;
-      allow list: if true;
+      allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
@@ -147,8 +142,7 @@ service cloud.firestore {
      * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
     match /socialMediaLinks/{socialMediaLinkId} {
-      allow get: if true;
-      allow list: if true;
+      allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
