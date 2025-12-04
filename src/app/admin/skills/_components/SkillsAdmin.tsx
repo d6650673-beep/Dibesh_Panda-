@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const skillSchema = z.object({
   name: z.string().min(1, 'Skill name is required.'),
   level: z.number().min(0).max(100, 'Level must be between 0 and 100.'),
+  icon: z.string().min(1, 'An icon name from Lucide React is required.'),
 });
 
 export function SkillsAdmin() {
@@ -30,7 +31,7 @@ export function SkillsAdmin() {
 
   const form = useForm<z.infer<typeof skillSchema>>({
     resolver: zodResolver(skillSchema),
-    defaultValues: { name: '', level: 50 },
+    defaultValues: { name: '', level: 50, icon: 'Code' },
   });
 
   const handleAddNewSkill = (values: z.infer<typeof skillSchema>) => {
@@ -69,12 +70,12 @@ export function SkillsAdmin() {
   
   const startEditing = (skill: Skill) => {
     setEditingSkillId(skill.id);
-    form.reset({ name: skill.name, level: skill.level });
+    form.reset({ name: skill.name, level: skill.level, icon: skill.icon || 'Code' });
   };
   
   const cancelEditing = () => {
     setEditingSkillId(null);
-    form.reset({ name: '', level: 50 });
+    form.reset({ name: '', level: 50, icon: 'Code' });
   }
 
   const sortedSkills = skills ? [...skills].sort((a, b) => b.level - a.level) : [];
@@ -89,16 +90,29 @@ export function SkillsAdmin() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(editingSkillId ? (values) => handleUpdateSkill(editingSkillId, values) : handleAddNewSkill)}
-            className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start"
+            className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:items-end"
           >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem className="flex-1">
+                <FormItem>
                   <FormLabel>Skill Name</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g. React" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="icon"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lucide Icon</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Code, PenTool" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,7 +122,7 @@ export function SkillsAdmin() {
               control={form.control}
               name="level"
               render={({ field }) => (
-                <FormItem className="w-full flex-1">
+                <FormItem className="sm:col-span-3">
                   <FormLabel>Proficiency: {field.value}%</FormLabel>
                   <FormControl>
                     <Slider
@@ -123,7 +137,7 @@ export function SkillsAdmin() {
                 </FormItem>
               )}
             />
-            <div className="flex gap-2 pt-8">
+            <div className="flex gap-2 sm:col-span-3">
               <Button type="submit">{editingSkillId ? 'Update Skill' : 'Add Skill'}</Button>
               {editingSkillId && <Button variant="ghost" onClick={cancelEditing}><X className="h-4 w-4"/></Button>}
             </div>
