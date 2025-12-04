@@ -51,20 +51,11 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-           {user && (
-             <Link href="/admin" className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary">
-              Admin
-            </Link>
-           )}
         </nav>
         <div className="hidden items-center gap-2 md:flex">
-          {user ? (
+          {user && (
             <Button variant="outline" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" /> Sign Out
-            </Button>
-          ) : (
-            <Button asChild>
-              <Link href="/login">Admin Login</Link>
             </Button>
           )}
         </div>
@@ -95,11 +86,6 @@ export function Header() {
                     {link.label}
                   </Link>
                 ))}
-                 {user && (
-                    <Link href="/admin" onClick={() => setOpen(false)} className="text-lg font-medium text-foreground/80 transition-colors hover:text-primary">
-                      Admin
-                    </Link>
-                  )}
               </nav>
               <div className="mt-auto pt-6">
                  {user ? (
