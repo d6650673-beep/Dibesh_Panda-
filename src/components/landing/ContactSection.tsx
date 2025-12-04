@@ -1,10 +1,19 @@
+'use client';
 import { ContactForm } from '@/components/landing/ContactForm';
-import { socialLinks } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Mail, Phone } from 'lucide-react';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import type { SocialLink } from '@/lib/types';
+import * as LucideIcons from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function ContactSection() {
+  const firestore = useFirestore();
+  const socialLinksRef = useMemoFirebase(() => collection(firestore, 'socialLinks'), [firestore]);
+  const { data: socialLinks, isLoading } = useCollection<SocialLink>(socialLinksRef);
+
   return (
     <section id="contact" className="bg-secondary py-16 md:py-24">
       <div className="container">
@@ -46,10 +55,11 @@ export function ContactSection() {
             <div>
               <h3 className="text-lg font-semibold">On Social Media</h3>
               <div className="mt-2 flex gap-2">
-                {socialLinks.map((link) => {
-                  const Icon = link.icon;
+                {isLoading && Array.from({length: 3}).map((_, i) => <Skeleton key={i} className="h-10 w-10" />)}
+                {socialLinks?.map((link) => {
+                  const Icon = (LucideIcons as any)[link.icon] || LucideIcons.Link;
                   return (
-                    <Button key={link.name} variant="outline" size="icon" asChild>
+                    <Button key={link.id} variant="outline" size="icon" asChild>
                       <Link href={link.url} target="_blank" rel="noopener noreferrer">
                         <Icon className="h-5 w-5" />
                         <span className="sr-only">{link.name}</span>

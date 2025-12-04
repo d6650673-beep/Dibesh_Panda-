@@ -1,12 +1,20 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { projects } from '@/lib/data';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import type { Project } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Github, ExternalLink } from 'lucide-react';
 
 export function ProjectsSection() {
+  const firestore = useFirestore();
+  const projectsRef = useMemoFirebase(() => collection(firestore, 'projects'), [firestore]);
+  const { data: projects, isLoading } = useCollection<Project>(projectsRef);
+
   return (
     <section id="projects" className="py-16 md:py-24">
       <div className="container">
@@ -17,7 +25,29 @@ export function ProjectsSection() {
           </p>
         </div>
         <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
+          {isLoading && Array.from({length: 3}).map((_, i) => (
+            <Card key={i} className="flex flex-col overflow-hidden">
+               <CardHeader className="p-0">
+                  <Skeleton className="aspect-video w-full" />
+               </CardHeader>
+               <div className="flex flex-1 flex-col p-6">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="mt-2 h-4 w-full" />
+                <Skeleton className="mt-1 h-4 w-5/6" />
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                </div>
+                <CardFooter className="mt-auto p-0 pt-6">
+                  <div className="flex w-full items-center justify-start gap-4">
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-10 w-32" />
+                  </div>
+                </CardFooter>
+               </div>
+            </Card>
+          ))}
+          {!isLoading && projects?.map((project) => (
             <Card key={project.id} className="flex flex-col overflow-hidden">
               <CardHeader className="p-0">
                 <div className="aspect-video overflow-hidden">

@@ -2,6 +2,9 @@
 
 import { z } from 'zod';
 import { summarizeContactForm, type ContactFormInput } from '@/ai/flows/contact-form-summary';
+import { initializeFirebase } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -42,14 +45,18 @@ export async function submitContact(
 
   try {
     const input: ContactFormInput = validatedFields.data;
+    const { firestore } = initializeFirebase();
 
-    // In a real application, you would save this data to Firestore.
-    // e.g., await addDoc(collection(db, "contacts"), { ...input, createdAt: serverTimestamp() });
-    console.log('Form data submitted:', input);
+    await addDoc(collection(firestore, "contactFormSubmissions"), { 
+        ...input, 
+        submissionDate: serverTimestamp() 
+    });
 
-    const { summary } = await summarizeContactForm(input);
-    console.log('AI Summary:', summary);
-    // This summary could be used for an admin email notification.
+    // We aren't awaiting this, it can run in the background
+    summarizeContactForm(input).then(({ summary }) => {
+      console.log('AI Summary:', summary);
+      // This summary could be used for an admin email notification, etc.
+    });
 
     return {
       message: `Thanks, ${input.name}! Your message has been received.`,
