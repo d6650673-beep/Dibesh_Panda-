@@ -52,7 +52,11 @@ export function ContactForm() {
             title: 'Error',
             description: 'Failed to send message. Please try again.',
           });
-          console.error('EmailJS Error:', error.text);
+          if (error && error.text) {
+            console.error('EmailJS Error:', error.text);
+          } else {
+            console.error('An unknown EmailJS error occurred:', error);
+          }
         }
       )
       .finally(() => {
