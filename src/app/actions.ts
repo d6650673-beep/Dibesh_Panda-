@@ -2,7 +2,8 @@
 
 import { z } from 'zod';
 import { summarizeContactForm, type ContactFormInput } from '@/ai/flows/contact-form-summary';
-import { initializeFirebase, addDocumentNonBlocking } from '@/firebase';
+import { getFirestore } from 'firebase-admin/firestore';
+import { initializeServerApp } from '@/firebase/server';
 import { collection, serverTimestamp } from 'firebase/firestore';
 
 
@@ -45,9 +46,12 @@ export async function submitContact(
 
   try {
     const input: ContactFormInput = validatedFields.data;
-    const { firestore } = initializeFirebase();
+    
+    // Use server-side initialization
+    const app = await initializeServerApp();
+    const firestore = getFirestore(app);
 
-    addDocumentNonBlocking(collection(firestore, "contactFormSubmissions"), { 
+    await firestore.collection("contactFormSubmissions").add({ 
         ...input, 
         submissionDate: serverTimestamp() 
     });
