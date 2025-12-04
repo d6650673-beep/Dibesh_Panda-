@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -55,8 +56,11 @@ export default function LoginPage() {
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex-col gap-4">
           <Button className="w-full" onClick={handleSignIn}>Sign In</Button>
+          <Button variant="link" asChild>
+            <Link href="/">Back to Home</Link>
+          </Button>
         </CardFooter>
       </Card>
     </div>
