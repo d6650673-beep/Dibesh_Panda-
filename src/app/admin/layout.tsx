@@ -1,16 +1,14 @@
 'use client';
 
-import { useUser } from '@/firebase';
+import { useUser, useAuth } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Home, User, Layers, Package, Mail, BookText, Phone } from 'lucide-react';
-import { Sidebar, SidebarProvider, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { Home, User, Layers, Package, Mail, BookText, Phone, LogOut, Sparkles } from 'lucide-react';
+import { Sidebar, SidebarProvider, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
-
+import { signOut } from 'firebase/auth';
 
 const adminNavLinks = [
     { href: '/admin/hero', label: 'Hero', icon: Home },
@@ -24,6 +22,7 @@ const adminNavLinks = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -32,6 +31,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.push('/login');
     }
   }, [user, isUserLoading, router]);
+
+  const handleSignOut = () => {
+    if (auth) {
+      signOut(auth);
+    }
+  };
 
   if (isUserLoading || !user) {
     return (
@@ -48,11 +53,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <SidebarProvider>
       <Sidebar side="left" variant="sidebar" collapsible="icon">
-        <SidebarContent className="p-2">
+        <SidebarContent className="flex flex-col p-2">
            <div className="p-2 mb-4">
             <Logo />
           </div>
-          <SidebarMenu>
+          <SidebarMenu className="flex-1">
             {adminNavLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -69,6 +74,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </SidebarMenuItem>
               );
             })}
+          </SidebarMenu>
+          <SidebarMenu>
+            <SidebarMenuItem>
+                <SidebarMenuButton onClick={handleSignOut} tooltip={{children: 'Log Out'}}>
+                    <LogOut />
+                    <span>Log Out</span>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
