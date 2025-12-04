@@ -39,7 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   };
 
-  if (isUserLoading || !user) {
+  if (isUserLoading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background">
         <div className="flex items-center gap-2 text-lg font-semibold text-primary">
@@ -49,6 +49,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <p className="mt-2 text-sm text-muted-foreground">Just a moment...</p>
       </div>
     );
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (
