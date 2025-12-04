@@ -1,37 +1,25 @@
 /**
- * This ruleset enforces a strict role-based security model for a portfolio or CMS application.
+ * This ruleset enforces a security model for a portfolio or CMS application.
  *
  * Core Philosophy:
- * The security model is centered around a global 'admin' role. Users with this role have full
+ * The security model is centered around an 'authenticated user' role. Logged-in users have full
  * control over all content collections. Most content is publicly readable by any user, signed-in
  * or not. This is ideal for a public-facing website where content is managed through a secure
- * admin panel.
+ * admin panel by the site owner.
  *
  * Data Structure:
  * The data is organized into top-level collections representing different sections of the website
- * (e.g., /heroSections, /projects, /services). A special collection, /roles_admin, is used to
- * explicitly grant administrative privileges to specific user UIDs.
+ * (e.g., /content, /projects, /services).
  *
  * Key Security Decisions:
- * - Admin Role Management: A user is considered an admin if a document with their UID exists in the
- *   /roles_admin collection. Only existing admins can add or remove other admins.
  * - Public Content: All collections representing website content are publicly readable (`get`, `list`)
  *   to ensure the website can be viewed by anyone.
- * - Admin-Only Writes: All write operations (`create`, `update`, `delete`) on content collections are
- *   strictly limited to users with the admin role.
+ * - Authenticated-Only Writes: All write operations (`create`, `update`, `delete`) on content collections are
+ *   strictly limited to any authenticated user. This is a simpler security model suitable for a single-admin site.
  * - Contact Form: The `/contactFormSubmissions` collection has unique rules. It is publicly writable
- *   (`create`) so anyone can submit the form, but it is readable and deletable only by admins.
+ *   (`create`) so anyone can submit the form, but it is readable and deletable only by authenticated users.
  *   Submissions are immutable (updates are forbidden).
  *
- * Denormalization for Authorization:
- * The `/roles_admin/{userId}` collection is a key denormalization strategy. Instead of checking roles
- * on a user document, we perform a direct and efficient `exists()` check against this collection. This
- * provides a single source of truth for administrative privileges across the entire database.
- *
- * Structural Segregation:
- * The data model effectively uses structural segregation. Publicly viewable content like `/projects`
- * is kept separate from private, admin-only data like `/contactFormSubmissions`, simplifying the
- * rules required for each path.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -48,102 +36,55 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    /**
-     * Checks if the user has an admin role by verifying the existence of a
-     * document in the /roles_admin collection matching their UID.
-     */
-    function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
     // --------------------------------------------------------------------------------
-    // Admin Role Management
+    // Content Collections (Managed by any authenticated user)
     // --------------------------------------------------------------------------------
 
     /**
-     * @description Manages admin user roles. Only existing admins can read or modify this collection.
-     * @path /roles_admin/{userId}
-     * @allow An existing admin (auth.uid='admin_abc') reads the list of other admins. (get, list)
-     * @deny A non-admin user (auth.uid='user_123') tries to add themselves as an admin. (create)
-     * @principle Enforces role-based access control for managing administrative privileges.
+     * @description Generic rule for content documents. Publicly readable, authenticated-user-only writes.
+     * @path /content/{document}
+     * @allow Any user can read.
+     * @deny A non-logged-in user tries to update.
      */
-    match /roles_admin/{userId} {
-      allow read, write: if isAdmin();
-    }
-    
     match /content/{document} {
-      allow get: if true;
-      allow list: if true;
-      allow write: if isAdmin();
-    }
-
-    // --------------------------------------------------------------------------------
-    // Public Content Sections (Admin-Managed)
-    // --------------------------------------------------------------------------------
-
-    /**
-     * @description Defines rules for the hero section content. Publicly readable, admin-only writes.
-     * @path /heroSections/{heroSectionId}
-     * @allow Any user, including unauthenticated ones, reads the hero section content. (get, list)
-     * @deny A signed-in, non-admin user tries to update the hero section text. (update)
-     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
-     */
-    match /heroSections/{heroSectionId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow write: if isSignedIn();
     }
 
     /**
-     * @description Defines rules for the about section content. Publicly readable, admin-only writes.
-     * @path /aboutSections/{aboutSectionId}
-     * @allow Any user reads the "about me" bio. (get, list)
-     * @deny A non-admin user tries to create a new about section. (create)
-     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
-     */
-    match /aboutSections/{aboutSectionId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-    
-    match /skills/{skillId} {
-        allow get, list: if true;
-        allow create, update, delete: if isAdmin();
-    }
-
-    /**
-     * @description Defines rules for the projects collection. Publicly readable, admin-only writes.
+     * @description Defines rules for projects. Publicly readable, authenticated-user-only writes.
      * @path /projects/{projectId}
-     * @allow Any user views the list of projects. (list)
-     * @deny A non-admin user tries to delete a project. (delete)
-     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
     match /projects/{projectId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, update, delete: if isSignedIn();
     }
 
     /**
-     * @description Defines rules for the services collection. Publicly readable, admin-only writes.
+     * @description Defines rules for services. Publicly readable, authenticated-user-only writes.
      * @path /services/{serviceId}
-     * @allow Any user reads the details of a service. (get)
-     * @deny A non-admin user attempts to create a new service offering. (create)
-     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
     match /services/{serviceId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, update, delete: if isSignedIn();
     }
 
     /**
-     * @description Defines rules for social media links. Publicly readable, admin-only writes.
+     * @description Defines rules for skills. Publicly readable, authenticated-user-only writes.
+     * @path /skills/{skillId}
+     */
+    match /skills/{skillId} {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+    
+    /**
+     * @description Defines rules for social media links. Publicly readable, authenticated-user-only writes.
      * @path /socialLinks/{socialLinkId}
-     * @allow Any user can read the list of social media links to display in the footer. (get, list)
-     * @deny A non-admin user tries to change a social media URL. (update)
-     * @principle Secures CMS content by allowing public reads and restricting writes to admins.
      */
     match /socialLinks/{socialLinkId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, update, delete: if isSignedIn();
     }
 
     // --------------------------------------------------------------------------------
@@ -151,17 +92,14 @@ service cloud.firestore {
     // --------------------------------------------------------------------------------
 
     /**
-     * @description Contact form submissions can be created by anyone, but only read and deleted by admins. Updates are disallowed.
+     * @description Contact form submissions can be created by anyone, but only read and deleted by authenticated users. Updates are disallowed.
      * @path /contactFormSubmissions/{contactFormSubmissionId}
-     * @allow An anonymous visitor submits the contact form. (create)
-     * @deny A regular signed-in user tries to read a submission. (get, list)
-     * @principle Allows public write access for data submission while protecting submitted data as private to admins.
      */
     match /contactFormSubmissions/{contactFormSubmissionId} {
-      allow get, list: if isAdmin();
+      allow get, list: if isSignedIn();
       allow create: if true;
       allow update: if false;
-      allow delete: if isAdmin();
+      allow delete: if isSignedIn();
     }
   }
 }
