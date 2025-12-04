@@ -11,16 +11,20 @@ import { navLinks } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { user } = useUser();
   const auth = useAuth();
+  const router = useRouter();
 
   const handleSignOut = () => {
     if (auth) {
-      signOut(auth);
+      signOut(auth).then(() => {
+        router.push('/admin/login');
+      });
     }
   };
 
@@ -94,7 +98,7 @@ export function Header() {
                     </Button>
                   ) : (
                     <Button asChild className="w-full">
-                      <Link href="/login" onClick={() => setOpen(false)}>Admin Login</Link>
+                      <Link href="/admin/login" onClick={() => setOpen(false)}>Admin Login</Link>
                     </Button>
                   )}
               </div>

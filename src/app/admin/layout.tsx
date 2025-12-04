@@ -1,13 +1,12 @@
 'use client';
 
 import { useUser, useAuth } from '@/firebase';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { Home, User, Layers, Package, Mail, BookText, Phone, LogOut, Sparkles, Award } from 'lucide-react';
 import { Sidebar, SidebarProvider, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
-import { usePathname } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 
 const adminNavLinks = [
@@ -28,18 +27,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
+    if (!isUserLoading && !user && pathname !== '/admin/login') {
+      router.push('/admin/login');
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, pathname]);
 
   const handleSignOut = () => {
     if (auth) {
-      signOut(auth);
+      signOut(auth).then(() => {
+        router.push('/admin/login');
+      });
     }
   };
 
-  if (isUserLoading) {
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+  
+  if (isUserLoading || !user) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background">
         <div className="flex items-center gap-2 text-lg font-semibold text-primary">
@@ -49,10 +54,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <p className="mt-2 text-sm text-muted-foreground">Just a moment...</p>
       </div>
     );
-  }
-
-  if (!user) {
-    return null;
   }
 
   return (
