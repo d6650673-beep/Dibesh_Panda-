@@ -58,8 +58,8 @@ export function Header() {
         </nav>
         <div className="hidden items-center gap-2 md:flex">
           {user && (
-            <Button variant="outline" onClick={handleSignOut}>
-              <LogOut className="mr-2 h-4 w-4" /> Sign Out
+            <Button variant="outline" asChild>
+              <Link href="/admin">Admin</Link>
             </Button>
           )}
         </div>
