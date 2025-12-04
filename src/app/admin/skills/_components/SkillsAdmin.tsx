@@ -82,7 +82,7 @@ export function SkillsAdmin() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Manage Skills</CardTitle>
+        <CardTitle>My Skills</CardTitle>
         <CardDescription>Add, edit, or delete your skills.</CardDescription>
       </CardHeader>
       <CardContent>
