@@ -36,13 +36,19 @@ export function CertificatesSection() {
             const cardContent = (
               <Card key={certificate.id} className="group flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2">
                 <div className="relative aspect-video w-full">
-                   <Image
-                    src={certificate.imageUrl}
-                    alt={certificate.name}
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-300 group-hover:scale-105"
-                  />
+                   {certificate.imageUrl ? (
+                    <Image
+                      src={certificate.imageUrl}
+                      alt={certificate.name}
+                      layout="fill"
+                      objectFit="cover"
+                      className="transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-muted">
+                        <span className="text-sm text-muted-foreground">No Image</span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
                   <h3 className="text-lg font-bold">{certificate.name}</h3>
