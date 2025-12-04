@@ -33,7 +33,7 @@ export function ContactForm() {
 
     emailjs
       .sendForm(
-        'service_y5sibpg', // Your Service ID
+        'service_h5qw6u6', // Your Service ID
         'template_xyayy5v', // Your Template ID
         formRef.current,
         'vOgy-4DFySh9qeSrn' // Your Public Key
