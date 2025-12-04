@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
-  title: 'Firebase Folio',
+  title: 'Dibesh portfolio',
   description: 'A modern, responsive portfolio website built with Next.js and Firebase.',
 };
 

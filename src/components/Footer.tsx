@@ -36,7 +36,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-6 border-t pt-6 text-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} Firebase Folio. All rights reserved.</p>
+          <p>&copy; {currentYear} Dibesh portfolio. All rights reserved.</p>
         </div>
       </div>
     </footer>
