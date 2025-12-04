@@ -3,12 +3,14 @@
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Sparkles, Home, User, Layers, Package, Mail, BookText, Phone } from 'lucide-react';
+import { Home, User, Layers, Package, Mail, BookText, Phone } from 'lucide-react';
 import { Sidebar, SidebarProvider, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Sparkles } from 'lucide-react';
+
 
 const adminNavLinks = [
     { href: '/admin/hero', label: 'Hero', icon: Home },
@@ -71,13 +73,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </SidebarContent>
       </Sidebar>
       <main className="flex-1">
-        <header className="flex h-14 items-center justify-between border-b bg-background px-4">
-           <SidebarTrigger className="md:hidden" />
-           <h1 className="text-xl font-semibold">Admin Dashboard</h1>
-            <Button asChild size="sm">
-              <Link href="/">Back to Site</Link>
-            </Button>
-        </header>
         <div className="p-4 sm:p-6">{children}</div>
       </main>
     </SidebarProvider>
