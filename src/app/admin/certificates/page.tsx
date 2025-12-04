@@ -140,12 +140,18 @@ export default function CertificatesAdminPage() {
 
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Existing Certificates</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {isLoading && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full" />)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {isLoading && Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-64 w-full" />)}
             {certificates?.map(cert => (
                 <Card key={cert.id} className="flex flex-col">
                     <div className="relative aspect-[4/3] w-full">
-                        <Image src={cert.imageUrl} alt={cert.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                        {cert.imageUrl ? (
+                          <Image src={cert.imageUrl} alt={cert.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center rounded-t-lg bg-muted">
+                            <span className="text-sm text-muted-foreground">No Image</span>
+                          </div>
+                        )}
                     </div>
                     <CardContent className="p-4 flex-1 flex flex-col">
                         <h3 className="font-bold">{cert.name}</h3>
