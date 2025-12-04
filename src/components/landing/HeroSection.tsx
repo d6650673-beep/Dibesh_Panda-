@@ -23,16 +23,18 @@ export function HeroSection() {
           <h1 className="font-headline text-4xl font-bold tracking-tight text-primary sm:text-5xl md:text-6xl lg:text-7xl">
             {isLoading ? <Skeleton className="mx-auto mt-2 h-14 w-3/4" /> : heroData?.title}
           </h1>
-          <p className="mt-6 text-lg text-foreground/80 md:text-xl">
-            {isLoading ? (
+          {isLoading ? (
+            <div className="mt-6 text-lg text-foreground/80 md:text-xl">
               <div className="space-y-2">
                 <Skeleton className="mx-auto h-5 w-full" />
                 <Skeleton className="mx-auto h-5 w-2/3" />
               </div>
-            ) : (
-              heroData?.introduction
-            )}
-          </p>
+            </div>
+          ) : (
+            <p className="mt-6 text-lg text-foreground/80 md:text-xl">
+              {heroData?.introduction}
+            </p>
+          )}
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
               <Link href="#contact">
