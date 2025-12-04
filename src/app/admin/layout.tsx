@@ -20,17 +20,17 @@ const adminNavLinks = [
     { href: '/admin/contact', label: 'Contact', icon: Phone }
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isUserLoading && !user && pathname !== '/admin/login') {
+    if (!isUserLoading && !user) {
       router.push('/admin/login');
     }
-  }, [user, isUserLoading, router, pathname]);
+  }, [user, isUserLoading, router]);
 
   const handleSignOut = () => {
     if (auth) {
@@ -40,10 +40,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   };
 
-  if (pathname === '/admin/login') {
-    return <>{children}</>;
-  }
-  
   if (isUserLoading || !user) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background">
@@ -96,4 +92,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </main>
     </SidebarProvider>
   );
+}
+
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
+  return <AdminDashboardLayout>{children}</AdminDashboardLayout>;
 }
