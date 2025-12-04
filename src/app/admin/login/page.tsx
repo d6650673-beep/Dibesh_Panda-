@@ -26,7 +26,12 @@ export default function LoginPage() {
     }
   }, [user, isUserLoading, router]);
 
-  const handleSignIn = async () => {
+  const handleSignIn = () => {
+    setError(null);
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
     try {
       initiateEmailSignIn(auth, email, password);
     } catch (err: any) {
