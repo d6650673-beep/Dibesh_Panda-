@@ -8,6 +8,7 @@ import { Sidebar, SidebarProvider, SidebarTrigger, SidebarContent, SidebarMenu, 
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 const adminNavLinks = [
     { href: '/admin/hero', label: 'Hero', icon: Home },
