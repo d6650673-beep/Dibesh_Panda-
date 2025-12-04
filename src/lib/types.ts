@@ -33,11 +33,12 @@ export type Skill = {
   icon: string;
 };
 
-export type Service = {
+export type Certificate = {
   id: string;
-  icon: string; // Storing icon name as string
-  title: string;
-  description: string;
+  icon: string;
+  name: string;
+  issuingOrganization: string;
+  url: string;
 };
 
 export type Project = {

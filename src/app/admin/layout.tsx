@@ -14,7 +14,7 @@ const adminNavLinks = [
     { href: '/admin/hero', label: 'Hero', icon: Home },
     { href: '/admin/about', label: 'About', icon: User },
     { href: '/admin/skills', label: 'Skills', icon: Award },
-    { href: '/admin/services', label: 'Services', icon: Layers },
+    { href: '/admin/certificates', label: 'Certificates', icon: Layers },
     { href: '/admin/projects', label: 'Projects', icon: Package },
     { href: '/admin/submissions', label: 'Submissions', icon: Mail },
     { href: '/admin/social', label: 'Social Links', icon: BookText },

@@ -9,7 +9,7 @@
  *
  * Data Structure:
  * The data is organized into top-level collections representing different sections of the website
- * (e.g., /content, /projects, /services).
+ * (e.g., /content, /projects, /certificates).
  *
  * Key Security Decisions:
  * - Public Content: All collections representing website content are publicly readable (`get`, `list`)
@@ -61,10 +61,10 @@ service cloud.firestore {
     }
 
     /**
-     * @description Defines rules for services. Publicly readable, authenticated-user-only writes.
-     * @path /services/{serviceId}
+     * @description Defines rules for certificates. Publicly readable, authenticated-user-only writes.
+     * @path /certificates/{certificateId}
      */
-    match /services/{serviceId} {
+    match /certificates/{certificateId} {
       allow get, list: if true;
       allow create, update, delete: if isSignedIn();
     }

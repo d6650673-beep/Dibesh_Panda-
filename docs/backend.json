@@ -148,34 +148,40 @@
         "githubLink"
       ]
     },
-    "Service": {
+    "Certificate": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Service",
+      "title": "Certificate",
       "type": "object",
-      "description": "Represents a service offered.",
+      "description": "Represents a certificate or award.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the Service entity."
+          "description": "Unique identifier for the Certificate entity."
         },
         "icon": {
           "type": "string",
-          "description": "Icon representing the service (e.g., FontAwesome class name)."
+          "description": "Icon representing the certificate (e.g., Lucide icon name)."
         },
-        "title": {
+        "name": {
           "type": "string",
-          "description": "The title of the service."
+          "description": "The name of the certificate or award."
         },
-        "description": {
+        "issuingOrganization": {
           "type": "string",
-          "description": "A description of the service."
+          "description": "The organization that issued the certificate."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL to the credential."
         }
       },
       "required": [
         "id",
         "icon",
-        "title",
-        "description"
+        "name",
+        "issuingOrganization",
+        "url"
       ]
     },
     "ContactFormSubmission": {
@@ -335,17 +341,17 @@
         }
       },
       {
-        "path": "/services/{serviceId}",
+        "path": "/certificates/{certificateId}",
         "definition": {
-          "entityName": "Service",
+          "entityName": "Certificate",
           "schema": {
-            "$ref": "#/backend/entities/Service"
+            "$ref": "#/backend/entities/Certificate"
           },
-          "description": "Collection to store service information.",
+          "description": "Collection to store certificate and award information.",
           "params": [
             {
-              "name": "serviceId",
-              "description": "The unique identifier for the Service document."
+              "name": "certificateId",
+              "description": "The unique identifier for the Certificate document."
             }
           ]
         }
