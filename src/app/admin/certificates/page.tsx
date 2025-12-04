@@ -13,12 +13,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Trash2, Edit, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import * as LucideIcons from 'lucide-react';
+import Image from 'next/image';
 
 const certificateSchema = z.object({
-  icon: z.string().min(1, 'Icon name is required.'),
   name: z.string().min(1, 'Certificate name is required.'),
   issuingOrganization: z.string().min(1, 'Issuing organization is required.'),
+  year: z.string().min(4, 'Year is required.'),
+  imageUrl: z.string().url('A valid image URL is required.'),
   url: z.string().url('A valid credential URL is required.'),
 });
 
@@ -32,7 +33,7 @@ export default function CertificatesAdminPage() {
 
   const form = useForm<z.infer<typeof certificateSchema>>({
     resolver: zodResolver(certificateSchema),
-    defaultValues: { icon: 'Award', name: '', issuingOrganization: '', url: '' },
+    defaultValues: { name: '', issuingOrganization: '', year: '', imageUrl: '', url: '' },
   });
 
   const onSubmit = (values: z.infer<typeof certificateSchema>) => {
@@ -46,7 +47,7 @@ export default function CertificatesAdminPage() {
         addDocumentNonBlocking(certificatesRef, values);
         toast({ title: 'Certificate added!' });
       }
-      form.reset();
+      form.reset({ name: '', issuingOrganization: '', year: '', imageUrl: '', url: '' });
     } catch (error) {
       toast({ variant: 'destructive', title: 'Error', description: 'Could not save certificate.' });
     }
@@ -70,7 +71,7 @@ export default function CertificatesAdminPage() {
 
   const cancelEdit = () => {
     setEditingId(null);
-    form.reset();
+    form.reset({ name: '', issuingOrganization: '', year: '', imageUrl: '', url: '' });
   };
 
   return (
@@ -99,14 +100,22 @@ export default function CertificatesAdminPage() {
                   </FormItem>
                 )}
               />
+              <FormField control={form.control} name="year" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Year</FormLabel>
+                    <FormControl><Input placeholder="e.g. 2025" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                <FormField
                 control={form.control}
-                name="icon"
+                name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Icon Name (from Lucide)</FormLabel>
+                    <FormLabel>Certificate Image URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Award, Sparkles" {...field} />
+                      <Input placeholder="https://example.com/certificate.png" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -131,23 +140,26 @@ export default function CertificatesAdminPage() {
 
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Existing Certificates</h2>
-        {isLoading && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
-        {certificates?.map(cert => {
-          const Icon = (LucideIcons as any)[cert.icon] || LucideIcons.HelpCircle;
-          return (
-            <Card key={cert.id} className="flex items-center p-4">
-              <Icon className="h-8 w-8 mr-4 text-primary" />
-              <div className="flex-1">
-                <h3 className="font-bold">{cert.name}</h3>
-                <p className="text-sm text-muted-foreground">{cert.issuingOrganization}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="icon" onClick={() => handleEdit(cert)}><Edit className="h-4 w-4" /></Button>
-                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDelete(cert.id, cert.name)}><Trash2 className="h-4 w-4" /></Button>
-              </div>
-            </Card>
-          )
-        })}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {isLoading && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full" />)}
+            {certificates?.map(cert => (
+                <Card key={cert.id} className="flex flex-col">
+                    <div className="relative aspect-[4/3] w-full">
+                        <Image src={cert.imageUrl} alt={cert.name} layout="fill" objectFit="cover" className="rounded-t-lg" />
+                    </div>
+                    <CardContent className="p-4 flex-1 flex flex-col">
+                        <h3 className="font-bold">{cert.name}</h3>
+                        <p className="text-sm text-muted-foreground">{cert.issuingOrganization} &bull; {cert.year}</p>
+                    </CardContent>
+                    <CardContent className="p-4 pt-0">
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleEdit(cert)}><Edit className="h-4 w-4 mr-2" /> Edit</Button>
+                            <Button variant="destructive" size="sm" onClick={() => handleDelete(cert.id, cert.name)}><Trash2 className="h-4 w-4 mr-2" /> Delete</Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
       </div>
     </div>
   );

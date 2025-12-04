@@ -35,9 +35,10 @@ export type Skill = {
 
 export type Certificate = {
   id: string;
-  icon: string;
   name: string;
   issuingOrganization: string;
+  year: string;
+  imageUrl: string;
   url: string;
 };
 

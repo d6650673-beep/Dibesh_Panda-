@@ -4,7 +4,7 @@ import { collection } from 'firebase/firestore';
 import type { Certificate } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import * as LucideIcons from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export function CertificatesSection() {
@@ -21,42 +21,42 @@ export function CertificatesSection() {
             A collection of my professional certifications and recognitions.
           </p>
         </div>
-        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {isLoading &&
-            Array.from({ length: 4 }).map((_, i) => (
-              <Card key={i}>
-                <CardHeader>
-                  <Skeleton className="mx-auto h-12 w-12 rounded-full" />
-                  <Skeleton className="mx-auto mt-4 h-6 w-3/4" />
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
+            Array.from({ length: 3 }).map((_, i) => (
+              <Card key={i} className="overflow-hidden">
+                <Skeleton className="aspect-video w-full" />
+                <CardContent className="p-6">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="mt-2 h-4 w-1/2" />
                 </CardContent>
               </Card>
             ))}
           {!isLoading && certificates?.map((certificate) => {
-            const Icon = (LucideIcons as any)[certificate.icon] || LucideIcons.Award;
             const cardContent = (
-              <Card className="flex h-full flex-col text-center transition-transform hover:scale-105 hover:shadow-lg">
-                <CardHeader>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="pt-4">{certificate.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <p className="text-muted-foreground">{certificate.issuingOrganization}</p>
-                </CardContent>
+              <Card key={certificate.id} className="group flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2">
+                <div className="relative aspect-video w-full">
+                   <Image
+                    src={certificate.imageUrl}
+                    alt={certificate.name}
+                    layout="fill"
+                    objectFit="cover"
+                    className="transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-lg font-bold">{certificate.name}</h3>
+                  <p className="text-sm text-muted-foreground">{certificate.issuingOrganization} &bull; {certificate.year}</p>
+                </div>
               </Card>
             );
 
             return certificate.url ? (
-              <Link href={certificate.url} key={certificate.id} target="_blank" rel="noopener noreferrer">
+              <Link href={certificate.url} key={certificate.id} target="_blank" rel="noopener noreferrer" className="flex">
                 {cardContent}
               </Link>
             ) : (
-              <div key={certificate.id}>{cardContent}</div>
+              <div key={certificate.id} className="flex">{cardContent}</div>
             );
           })}
         </div>
