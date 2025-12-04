@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { doc } from 'firebase/firestore';
 import { useFirestore, useDoc, setDocumentNonBlocking, useMemoFirebase } from '@/firebase';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,6 +31,8 @@ export default function AboutAdminPage() {
     resolver: zodResolver(aboutSchema),
     defaultValues: { bio: '', profilePhotoUrl: '' },
   });
+
+  const profilePhotoUrlValue = form.watch('profilePhotoUrl');
 
   useEffect(() => {
     if (aboutData) {
@@ -96,6 +99,19 @@ export default function AboutAdminPage() {
                     </FormItem>
                   )}
                 />
+                {profilePhotoUrlValue && (
+                  <div className="mt-4">
+                    <FormLabel>Image Preview</FormLabel>
+                    <div className="mt-2 relative w-48 h-48 rounded-lg overflow-hidden border">
+                      <Image 
+                        src={profilePhotoUrlValue} 
+                        alt="Profile Photo Preview" 
+                        layout="fill"
+                        objectFit="cover" 
+                      />
+                    </div>
+                  </div>
+                )}
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? 'Saving...' : 'Save About Section'}
                 </Button>
