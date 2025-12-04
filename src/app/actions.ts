@@ -2,8 +2,8 @@
 
 import { z } from 'zod';
 import { summarizeContactForm, type ContactFormInput } from '@/ai/flows/contact-form-summary';
-import { initializeFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { initializeFirebase, addDocumentNonBlocking } from '@/firebase';
+import { collection, serverTimestamp } from 'firebase/firestore';
 
 
 const contactSchema = z.object({
@@ -47,7 +47,7 @@ export async function submitContact(
     const input: ContactFormInput = validatedFields.data;
     const { firestore } = initializeFirebase();
 
-    await addDoc(collection(firestore, "contactFormSubmissions"), { 
+    addDocumentNonBlocking(collection(firestore, "contactFormSubmissions"), { 
         ...input, 
         submissionDate: serverTimestamp() 
     });
