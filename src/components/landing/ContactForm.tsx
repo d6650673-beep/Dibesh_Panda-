@@ -1,8 +1,7 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
-import { useFormStatus } from 'react-dom';
-import { submitContact, type ContactFormState } from '@/app/actions';
+import { useRef, useState } from 'react';
+import emailjs from '@emailjs/browser';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,49 +9,69 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending ? 'Sending...' : 'Send Message'}
+    <Button type="submit" disabled={isSubmitting} className="w-full">
+      {isSubmitting ? 'Sending...' : 'Send Message'}
     </Button>
   );
 }
 
 export function ContactForm() {
-  const initialState: ContactFormState = { message: '', success: false };
-  const [state, formAction] = useActionState(submitContact, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (state.message) {
-      if (state.success) {
-        toast({
-          title: 'Success!',
-          description: state.message,
-        });
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: state.message,
-        });
-      }
+  const sendEmail = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    if (!formRef.current) {
+      setIsSubmitting(false);
+      return;
     }
-  }, [state, toast]);
+
+    emailjs
+      .sendForm(
+        'service_y5sibpg', // Your Service ID
+        'template_xyayy5v', // Your Template ID
+        formRef.current,
+        'vOgy-4DFySh9qeSrn' // Your Public Key
+      )
+      .then(
+        () => {
+          toast({
+            title: 'Success!',
+            description: 'Your message has been sent.',
+          });
+          formRef.current?.reset();
+        },
+        (error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to send message. Please try again.',
+          });
+          console.error('EmailJS Error:', error.text);
+        }
+      )
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
 
   return (
     <Card>
       <CardContent className="p-6">
-        <form action={formAction} className="space-y-6">
+        <form ref={formRef} onSubmit={sendEmail} className="space-y-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" placeholder="Your Name" required />
+              <Label htmlFor="user_name">Name</Label>
+              <Input id="user_name" name="user_name" placeholder="Your Name" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="your@email.com" required />
+              <Label htmlFor="user_email">Email</Label>
+              <Input id="user_email" name="user_email" type="email" placeholder="your@email.com" required />
             </div>
           </div>
           <div className="space-y-2">
@@ -60,17 +79,8 @@ export function ContactForm() {
             <Textarea id="message" name="message" placeholder="How can I help you?" rows={5} required />
           </div>
           <div>
-            <SubmitButton />
+            <SubmitButton isSubmitting={isSubmitting} />
           </div>
-          {state.issues && (
-            <div className="text-sm text-destructive">
-              <ul>
-                {state.issues.map((issue) => (
-                  <li key={issue}>- {issue}</li>
-                ))}
-              </ul>
-            </div>
-          )}
         </form>
       </CardContent>
     </Card>
