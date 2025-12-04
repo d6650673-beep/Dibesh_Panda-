@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -9,10 +9,20 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from '@/components/Logo';
 import { navLinks } from '@/lib/data';
 import { cn } from '@/lib/utils';
+import { useUser, useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { user } = useUser();
+  const auth = useAuth();
+
+  const handleSignOut = () => {
+    if (auth) {
+      signOut(auth);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,11 +51,22 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+           {user && (
+             <Link href="/admin" className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary">
+              Admin
+            </Link>
+           )}
         </nav>
-        <div className="hidden md:block">
-          <Button asChild>
-            <Link href="#contact">Hire Me</Link>
-          </Button>
+        <div className="hidden items-center gap-2 md:flex">
+          {user ? (
+            <Button variant="outline" onClick={handleSignOut}>
+              <LogOut className="mr-2 h-4 w-4" /> Sign Out
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link href="/login">Admin Login</Link>
+            </Button>
+          )}
         </div>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="md:hidden">
@@ -74,11 +95,22 @@ export function Header() {
                     {link.label}
                   </Link>
                 ))}
+                 {user && (
+                    <Link href="/admin" onClick={() => setOpen(false)} className="text-lg font-medium text-foreground/80 transition-colors hover:text-primary">
+                      Admin
+                    </Link>
+                  )}
               </nav>
               <div className="mt-auto pt-6">
-                <Button asChild className="w-full">
-                  <Link href="#contact" onClick={() => setOpen(false)}>Hire Me</Link>
-                </Button>
+                 {user ? (
+                    <Button onClick={() => { handleSignOut(); setOpen(false); }} className="w-full">
+                      <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                    </Button>
+                  ) : (
+                    <Button asChild className="w-full">
+                      <Link href="/login" onClick={() => setOpen(false)}>Admin Login</Link>
+                    </Button>
+                  )}
               </div>
             </div>
           </SheetContent>
