@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookText, Home, Layers, Mail, Package, User } from 'lucide-react';
+import { BookText, Home, Layers, Mail, Package, User, Phone } from 'lucide-react';
 import Link from 'next/link';
 
 const managementPages = [
@@ -9,7 +9,8 @@ const managementPages = [
     { href: '/admin/services', title: 'Services', icon: Layers, description: 'Manage the services you offer.' },
     { href: '/admin/projects', title: 'Projects', icon: Package, description: 'Add, edit, or remove projects.' },
     { href: '/admin/submissions', title: 'Submissions', icon: Mail, description: 'View contact form messages.' },
-    { href: '/admin/social', title: 'Social Links', icon: BookText, description: 'Manage your social media links.'}
+    { href: '/admin/social', title: 'Social Links', icon: BookText, description: 'Manage your social media links.'},
+    { href: '/admin/contact', title: 'Contact Details', icon: Phone, description: 'Update your email and phone.'}
 ]
 
 export default function AdminDashboard() {

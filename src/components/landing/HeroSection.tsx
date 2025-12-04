@@ -24,11 +24,9 @@ export function HeroSection() {
             {isLoading ? <Skeleton className="mx-auto mt-2 h-14 w-3/4" /> : heroData?.title}
           </h1>
           {isLoading ? (
-            <div className="mt-6 text-lg text-foreground/80 md:text-xl">
-              <div className="space-y-2">
+            <div className="mt-6 space-y-2 text-lg text-foreground/80 md:text-xl">
                 <Skeleton className="mx-auto h-5 w-full" />
                 <Skeleton className="mx-auto h-5 w-2/3" />
-              </div>
             </div>
           ) : (
             <p className="mt-6 text-lg text-foreground/80 md:text-xl">
@@ -38,7 +36,7 @@ export function HeroSection() {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
               <Link href="#contact">
-                Hire Me <ArrowRight className="ml-2" />
+                {heroData?.hireMeButtonText || 'Hire Me'} <ArrowRight className="ml-2" />
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>

@@ -18,6 +18,7 @@ export type HeroData = {
   title: string;
   introduction: string;
   cvUrl: string;
+  hireMeButtonText: string;
 };
 
 export type AboutData = {
@@ -59,3 +60,8 @@ export type ContactSubmission = {
       nanoseconds: number;
     };
   }
+
+export type ContactDetails = {
+    email: string;
+    phone: string;
+}

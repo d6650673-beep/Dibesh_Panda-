@@ -19,6 +19,7 @@ const heroSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   introduction: z.string().min(1, 'Introduction is required'),
   cvUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  hireMeButtonText: z.string().min(1, 'Button text is required'),
 });
 
 export default function HeroAdminPage() {
@@ -35,6 +36,7 @@ export default function HeroAdminPage() {
       title: '',
       introduction: '',
       cvUrl: '',
+      hireMeButtonText: 'Hire Me',
     },
   });
 
@@ -72,6 +74,7 @@ export default function HeroAdminPage() {
                     <Skeleton className="h-10 w-full" />
                     <Skeleton className="h-10 w-full" />
                     <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-10 w-full" />
                     <Skeleton className="h-10 w-full" />
                     <Skeleton className="h-10 w-24" />
                 </CardContent>
@@ -136,6 +139,19 @@ export default function HeroAdminPage() {
                     <FormLabel>CV Download URL</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/your-cv.pdf" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="hireMeButtonText"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hire Me Button Text</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Hire Me" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

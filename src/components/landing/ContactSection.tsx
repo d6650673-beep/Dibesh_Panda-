@@ -3,16 +3,20 @@ import { ContactForm } from '@/components/landing/ContactForm';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Mail, Phone } from 'lucide-react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
-import type { SocialLink } from '@/lib/types';
+import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
+import type { SocialLink, ContactDetails } from '@/lib/types';
 import * as LucideIcons from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function ContactSection() {
   const firestore = useFirestore();
   const socialLinksRef = useMemoFirebase(() => collection(firestore, 'socialLinks'), [firestore]);
-  const { data: socialLinks, isLoading } = useCollection<SocialLink>(socialLinksRef);
+  const { data: socialLinks, isLoading: isLoadingSocials } = useCollection<SocialLink>(socialLinksRef);
+
+  const contactDetailsRef = useMemoFirebase(() => doc(firestore, 'content', 'contact'), [firestore]);
+  const { data: contactDetails, isLoading: isLoadingDetails } = useDoc<ContactDetails>(contactDetailsRef);
+
 
   return (
     <section id="contact" className="bg-secondary py-16 md:py-24">
@@ -35,9 +39,11 @@ export function ContactSection() {
               <div>
                 <h3 className="text-lg font-semibold">Email</h3>
                 <p className="text-muted-foreground">Drop me a line anytime</p>
-                <a href="mailto:contact@example.com" className="font-medium text-primary hover:underline">
-                  contact@example.com
-                </a>
+                {isLoadingDetails ? <Skeleton className="h-6 w-48"/> : (
+                    <a href={`mailto:${contactDetails?.email}`} className="font-medium text-primary hover:underline">
+                        {contactDetails?.email}
+                    </a>
+                )}
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -47,15 +53,17 @@ export function ContactSection() {
               <div>
                 <h3 className="text-lg font-semibold">Phone</h3>
                 <p className="text-muted-foreground">Let's have a chat</p>
-                <a href="tel:+123456789" className="font-medium text-primary hover:underline">
-                  +1 (234) 567-89
-                </a>
+                {isLoadingDetails ? <Skeleton className="h-6 w-32"/> : (
+                    <a href={`tel:${contactDetails?.phone}`} className="font-medium text-primary hover:underline">
+                        {contactDetails?.phone}
+                    </a>
+                )}
               </div>
             </div>
             <div>
               <h3 className="text-lg font-semibold">On Social Media</h3>
               <div className="mt-2 flex gap-2">
-                {isLoading && Array.from({length: 3}).map((_, i) => <Skeleton key={i} className="h-10 w-10" />)}
+                {isLoadingSocials && Array.from({length: 3}).map((_, i) => <Skeleton key={i} className="h-10 w-10" />)}
                 {socialLinks?.map((link) => {
                   const Icon = (LucideIcons as any)[link.icon] || LucideIcons.Link;
                   return (
