@@ -68,11 +68,13 @@ service cloud.firestore {
      * @principle Enforces role-based access control for managing administrative privileges.
      */
     match /roles_admin/{userId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow read, write: if isAdmin();
+    }
+    
+    match /content/{document} {
+      allow get: if true;
+      allow list: if true;
+      allow write: if isAdmin();
     }
 
     // --------------------------------------------------------------------------------
@@ -89,9 +91,7 @@ service cloud.firestore {
     match /heroSections/{heroSectionId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow create, update, delete: if isAdmin();
     }
 
     /**
@@ -104,24 +104,13 @@ service cloud.firestore {
     match /aboutSections/{aboutSectionId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
-
-      /**
-       * @description Rules for skills, nested under an about section. Publicly readable, admin-only writes.
-       * @path /aboutSections/{aboutSectionId}/skills/{skillId}
-       * @allow An admin user adds a new skill with the correct `aboutSectionId`. (create)
-       * @deny An admin user tries to create a skill where the document's `aboutSectionId` does not match the path. (create)
-       * @principle Secures subcollection data and ensures relational integrity with the parent document.
-       */
-      match /skills/{skillId} {
+      allow create, update, delete: if isAdmin();
+    }
+    
+    match /skills/{skillId} {
         allow get: if true;
         allow list: if true;
-        allow create: if isAdmin() && request.resource.data.aboutSectionId == aboutSectionId;
-        allow update: if isAdmin() && resource != null && request.resource.data.aboutSectionId == resource.data.aboutSectionId;
-        allow delete: if isAdmin() && resource != null;
-      }
+        allow create, update, delete: if isAdmin();
     }
 
     /**
@@ -134,9 +123,7 @@ service cloud.firestore {
     match /projects/{projectId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow create, update, delete: if isAdmin();
     }
 
     /**
@@ -149,9 +136,7 @@ service cloud.firestore {
     match /services/{serviceId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow create, update, delete: if isAdmin();
     }
 
     /**
@@ -164,9 +149,7 @@ service cloud.firestore {
     match /socialMediaLinks/{socialMediaLinkId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow create, update, delete: if isAdmin();
     }
 
     // --------------------------------------------------------------------------------
@@ -181,11 +164,10 @@ service cloud.firestore {
      * @principle Allows public write access for data submission while protecting submitted data as private to admins.
      */
     match /contactFormSubmissions/{contactFormSubmissionId} {
-      allow get: if isAdmin();
-      allow list: if isAdmin();
+      allow get, list: if isAdmin();
       allow create: if true;
       allow update: if false;
-      allow delete: if isAdmin() && resource != null;
+      allow delete: if isAdmin();
     }
   }
 }
