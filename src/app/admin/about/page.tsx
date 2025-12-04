@@ -13,7 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { AboutData } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { SkillsAdmin } from './_components/SkillsAdmin';
 
 const aboutSchema = z.object({
   bio: z.string().min(10, 'Biography must be at least 10 characters.'),
@@ -105,8 +104,6 @@ export default function AboutAdminPage() {
           )}
         </CardContent>
       </Card>
-
-      <SkillsAdmin />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useUser, useAuth } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Home, User, Layers, Package, Mail, BookText, Phone, LogOut, Sparkles } from 'lucide-react';
+import { Home, User, Layers, Package, Mail, BookText, Phone, LogOut, Sparkles, Award } from 'lucide-react';
 import { Sidebar, SidebarProvider, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
@@ -13,6 +13,7 @@ import { signOut } from 'firebase/auth';
 const adminNavLinks = [
     { href: '/admin/hero', label: 'Hero', icon: Home },
     { href: '/admin/about', label: 'About', icon: User },
+    { href: '/admin/skills', label: 'Skills', icon: Award },
     { href: '/admin/services', label: 'Services', icon: Layers },
     { href: '/admin/projects', label: 'Projects', icon: Package },
     { href: '/admin/submissions', label: 'Submissions', icon: Mail },
@@ -64,7 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <SidebarMenuItem key={link.href}>
                   <Link href={link.href}>
                     <SidebarMenuButton
-                      isActive={pathname === link.href}
+                      isActive={pathname.startsWith(link.href)}
                       tooltip={{ children: link.label }}
                     >
                       <Icon />
