@@ -9,7 +9,7 @@ export type SocialLink = {
   id: string;
   name: string;
   url: string;
-  icon: ElementType;
+  icon: string;
   placeholder: string;
 };
 

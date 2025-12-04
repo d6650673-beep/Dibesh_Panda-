@@ -1,5 +1,5 @@
 'use client';
-import { useCollection, useFirestore, updateDocumentNonBlocking, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, setDocumentNonBlocking, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +19,7 @@ const socialLinksSchema = z.object({
   links: z.array(z.object({
     id: z.string(),
     name: z.string(),
-    url: z.string().url('Please enter a valid URL.'),
+    url: z.string().url('Please enter a valid URL.').or(z.literal('')),
     icon: z.string(),
     placeholder: z.string(),
   }))
@@ -39,24 +39,15 @@ export default function SocialLinksAdminPage() {
   const { fields } = useFieldArray({ control: form.control, name: "links" });
 
   useEffect(() => {
-    if (socialLinks) {
-        // Create a map of the default links for easy lookup
-        const defaultMap = new Map(defaultSocialLinks.map(l => [l.id, l]));
-        
-        // Combine DB data with defaults. DB data takes precedence.
+    if (socialLinks && socialLinks.length > 0) {
+        const dbLinksMap = new Map(socialLinks.map(l => [l.id, l]));
         const combinedLinks = defaultSocialLinks.map(defaultLink => {
-            const dbLink = socialLinks.find(l => l.id === defaultLink.id);
-            return dbLink ? { ...dbLink, placeholder: defaultLink.placeholder } : defaultLink;
+            const dbLink = dbLinksMap.get(defaultLink.id);
+            return dbLink ? { ...defaultLink, ...dbLink } : defaultLink;
         });
-
-        // Add any links from DB that are not in defaults (custom links)
-        socialLinks.forEach(dbLink => {
-            if (!defaultMap.has(dbLink.id)) {
-                combinedLinks.push({ ...dbLink, placeholder: 'https://example.com' });
-            }
-        });
-
         form.reset({ links: combinedLinks });
+    } else {
+        form.reset({ links: defaultSocialLinks });
     }
   }, [socialLinks, form]);
 
