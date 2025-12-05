@@ -106,8 +106,8 @@ export default function AboutAdminPage() {
                       <Image 
                         src={profilePhotoUrlValue} 
                         alt="Profile Photo Preview" 
-                        layout="fill"
-                        objectFit="cover" 
+                        fill
+                        style={{objectFit: "cover"}}
                       />
                     </div>
                   </div>
