@@ -1,6 +1,6 @@
 'use client';
 
-import { SkillsAdmin } from './_components/SkillsAdmin';
+import { SkillsAdmin } from '../about/_components/SkillsAdmin';
 
 export default function SkillsAdminPage() {
   return (
