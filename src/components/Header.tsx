@@ -39,8 +39,8 @@ export function Header() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-300',
-        isScrolled ? 'border-b border-border/60 bg-background/80 backdrop-blur-lg' : 'bg-background/0'
+        'sticky top-0 z-50 w-full transition-all duration-300 animated-gradient-header',
+        isScrolled ? 'border-b border-border/60 bg-background/80 backdrop-blur-lg' : ''
       )}
     >
       <div className="container flex h-16 items-center justify-between">
@@ -50,7 +50,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
+              className="text-sm font-medium text-primary-foreground/80 transition-colors hover:text-primary-foreground"
             >
               {link.label}
             </Link>
