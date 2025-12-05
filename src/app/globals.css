@@ -85,7 +85,7 @@
 }
 
 @layer components {
-  .animated-gradient-header {
+  .animated-gradient-line {
     background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary)));
     background-size: 200% auto;
     animation: gradient-animation 8s linear infinite;

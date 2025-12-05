@@ -39,7 +39,7 @@ export function Header() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-300 animated-gradient-header',
+        'sticky top-0 z-50 w-full transition-all duration-300',
         isScrolled ? 'border-b border-border/60 bg-background/80 backdrop-blur-lg' : ''
       )}
     >
@@ -50,7 +50,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-primary-foreground/80 transition-colors hover:text-primary-foreground"
+              className="text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
             >
               {link.label}
             </Link>
@@ -106,6 +106,7 @@ export function Header() {
           </SheetContent>
         </Sheet>
       </div>
+      <div className="h-0.5 w-full animated-gradient-line" />
     </header>
   );
 }
