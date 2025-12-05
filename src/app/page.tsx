@@ -1,3 +1,5 @@
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { AboutSection } from '@/components/landing/AboutSection';
 import { CertificatesSection } from '@/components/landing/CertificatesSection';
@@ -7,13 +9,17 @@ import { SkillsSection } from '@/components/landing/SkillsSection';
 
 export default function Home() {
   return (
-    <>
-      <HeroSection />
-      <AboutSection />
-      <SkillsSection />
-      <CertificatesSection />
-      <ProjectsSection />
-      <ContactSection />
-    </>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1">
+        <HeroSection />
+        <AboutSection />
+        <SkillsSection />
+        <CertificatesSection />
+        <ProjectsSection />
+        <ContactSection />
+      </main>
+      <Footer />
+    </div>
   );
 }
